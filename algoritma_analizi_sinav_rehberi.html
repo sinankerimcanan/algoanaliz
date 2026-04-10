@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algoritma Analizi - Sınav Hazırlık</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;600;700;800&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0e13;
+    --surface: #13161d;
+    --surface2: #1a1e28;
+    --border: #252a36;
+    --text: #e2e4e9;
+    --text-dim: #8b90a0;
+    --accent1: #60a5fa;
+    --accent1-dim: #60a5fa22;
+    --accent2: #f97316;
+    --accent2-dim: #f9731622;
+    --accent3: #a78bfa;
+    --accent3-dim: #a78bfa22;
+    --accent4: #34d399;
+    --accent4-dim: #34d39922;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --green: #4ade80;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    padding: 80px 40px 60px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px; left: 50%; transform: translateX(-50%);
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, #60a5fa11 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-size: 3.2rem;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    background: linear-gradient(135deg, #60a5fa, #a78bfa, #f97316);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+  }
+  .hero p {
+    color: var(--text-dim);
+    font-size: 1.1rem;
+    font-weight: 300;
+  }
+
+  /* Nav */
+  .nav {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 20px 40px;
+    flex-wrap: wrap;
+  }
+  .nav-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.25s;
+  }
+  .nav-btn:hover, .nav-btn.active {
+    background: var(--surface2);
+    color: var(--text);
+    border-color: var(--accent1);
+    box-shadow: 0 0 20px var(--accent1-dim);
+  }
+  .nav-btn[data-q="1"].active { border-color: var(--accent1); box-shadow: 0 0 20px var(--accent1-dim); }
+  .nav-btn[data-q="2"].active { border-color: var(--accent2); box-shadow: 0 0 20px var(--accent2-dim); }
+  .nav-btn[data-q="3"].active { border-color: var(--accent3); box-shadow: 0 0 20px var(--accent3-dim); }
+  .nav-btn[data-q="4"].active { border-color: var(--accent4); box-shadow: 0 0 20px var(--accent4-dim); }
+  .nav-btn[data-q="5"].active { border-color: var(--yellow); box-shadow: 0 0 20px #fbbf2422; }
+
+  /* Container */
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* Section */
+  .section {
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+  .section.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Question Card */
+  .q-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .q-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .q1 .q-card::before { background: linear-gradient(90deg, var(--accent1), transparent); }
+  .q2 .q-card::before { background: linear-gradient(90deg, var(--accent2), transparent); }
+  .q3 .q-card::before { background: linear-gradient(90deg, var(--accent3), transparent); }
+  .q4 .q-card::before { background: linear-gradient(90deg, var(--accent4), transparent); }
+
+  .q-card h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .q-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .q1 .q-num { background: var(--accent1-dim); color: var(--accent1); }
+  .q2 .q-num { background: var(--accent2-dim); color: var(--accent2); }
+  .q3 .q-num { background: var(--accent3-dim); color: var(--accent3); }
+  .q4 .q-num { background: var(--accent4-dim); color: var(--accent4); }
+
+  .q-card h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 28px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .q-card p, .q-card li {
+    color: var(--text);
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+  .q-card ul, .q-card ol {
+    padding-left: 20px;
+    margin: 10px 0;
+  }
+  .q-card li { margin-bottom: 6px; }
+
+  /* Code */
+  pre {
+    background: #0a0c10;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    overflow-x: auto;
+    margin: 16px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    line-height: 1.8;
+    color: #c9d1d9;
+  }
+  .kw { color: #ff7b72; }
+  .fn { color: #d2a8ff; }
+  .num { color: #79c0ff; }
+  .cmt { color: #8b949e; font-style: italic; }
+  .op { color: #ffa657; }
+  .ret { color: #ff7b72; }
+  .type { color: #79c0ff; }
+
+  /* Result Box */
+  .result {
+    border-radius: 12px;
+    padding: 18px 24px;
+    margin: 16px 0;
+    font-weight: 600;
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .result.big-o {
+    background: linear-gradient(135deg, #60a5fa11, #a78bfa11);
+    border: 1px solid #60a5fa33;
+    color: var(--accent1);
+  }
+  .result.best {
+    background: var(--accent4-dim);
+    border: 1px solid #34d39933;
+    color: var(--accent4);
+  }
+  .result.worst {
+    background: #f8717111;
+    border: 1px solid #f8717133;
+    color: var(--red);
+  }
+
+  /* Math */
+  .math {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.15em;
+    font-style: italic;
+    color: var(--accent1);
+  }
+  .math-block {
+    background: #0a0c10;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 24px;
+    margin: 14px 0;
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--text);
+    text-align: center;
+    line-height: 2;
+  }
+
+  /* Table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.9rem;
+  }
+  th {
+    background: var(--surface2);
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid var(--border);
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  tr:hover td { background: #ffffff04; }
+
+  /* Tag */
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .tag-blue { background: var(--accent1-dim); color: var(--accent1); }
+  .tag-orange { background: var(--accent2-dim); color: var(--accent2); }
+  .tag-purple { background: var(--accent3-dim); color: var(--accent3); }
+  .tag-green { background: var(--accent4-dim); color: var(--accent4); }
+  .tag-red { background: #f8717122; color: var(--red); }
+  .tag-yellow { background: #fbbf2422; color: var(--yellow); }
+
+  /* Tree visualization */
+  .tree {
+    background: #0a0c10;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 14px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--text-dim);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* Step indicator */
+  .step {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
+
+  .step-row {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .step-content { flex: 1; }
+
+  /* Comparison table special */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .compare-card {
+    background: #0a0c10;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .compare-card h4 {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    color: var(--text-dim);
+  }
+
+  /* Alt method box */
+  .alt-method {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent3);
+    border-radius: 0 12px 12px 0;
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+  .alt-method h4 {
+    color: var(--accent3);
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+
+  /* Tip box */
+  .tip {
+    background: #fbbf2409;
+    border: 1px solid #fbbf2433;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 0.9rem;
+    color: var(--yellow);
+  }
+  .tip strong { color: var(--yellow); }
+
+  /* Summary cards */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .summary-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .summary-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+  .summary-item h4 {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .summary-item .big {
+    font-size: 1.8rem;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .summary-item .label {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  .highlight {
+    background: #fbbf2418;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--yellow);
+    font-weight: 600;
+  }
+
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 2rem; }
+    .hero { padding: 50px 20px 40px; }
+    .q-card { padding: 24px 20px; }
+    .compare-grid, .summary-grid { grid-template-columns: 1fr; }
+    .nav-btn { font-size: 0.78rem; padding: 8px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Algoritma Analizi</h1>
+  <p>Sınav Hazırlık Rehberi — 4 Soru · Detaylı Çözüm · Alternatif Yöntemler</p>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" data-q="1" onclick="show(1)">S1 · Fast Exponentiation</button>
+  <button class="nav-btn" data-q="2" onclick="show(2)">S2 · Euclidean GCD</button>
+  <button class="nav-btn" data-q="3" onclick="show(3)">S3 · Linear Recursion</button>
+  <button class="nav-btn" data-q="4" onclick="show(4)">S4 · Tribonacci</button>
+  <button class="nav-btn" data-q="5" onclick="show(5)">Özet Tablo</button>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════════════════════════ SORU 1 ═══════════════════════════════════════════════ -->
+<div class="section q1 active" id="s1">
+  <div class="q-card">
+    <h2><span class="q-num">S1</span> Binary Exponentiation — Big O Analizi</h2>
+    <p>Fonksiyon: <span class="tag tag-blue">O(log n)</span> · Yöntem: Döngü Analizi · Puan: 20P</p>
+
+    <h3>Kod</h3>
+    <pre><span class="type">int</span> <span class="fn">ornek</span>(<span class="type">int</span> a, <span class="type">int</span> b) {
+    <span class="type">int</span> result = <span class="num">1</span>;
+    <span class="kw">while</span> (b > <span class="num">0</span>) {            <span class="cmt">// b sıfır olana kadar</span>
+        <span class="kw">if</span> (b % <span class="num">2</span> == <span class="num">1</span>) {
+            result *= a;        <span class="cmt">// b tek → çarp</span>
+        }
+        a *= a;                 <span class="cmt">// a'yı karele</span>
+        b /= <span class="num">2</span>;                 <span class="cmt">// b'yi yarıla</span>
+    }
+    <span class="ret">return</span> result;
+}</pre>
+
+    <h3>Ne Yapıyor?</h3>
+    <p>Bu algoritma <strong>a<sup>b</sup></strong> değerini hesaplar. Naif yaklaşımda b kez çarpma gerekirken, bu yöntem b'nin binary temsilini kullanarak işlem sayısını logaritmik seviyeye düşürür. Her adımda b yarılanır ve a karelenir.</p>
+    <p><strong>Örnek:</strong> <span class="math">3<sup>13</sup></span> hesaplanırken → 13 = 1101₂ olduğundan sadece 4 iterasyonda sonuç bulunur.</p>
+
+    <h3>Adım Adım Analiz</h3>
+
+    <div class="step-row">
+      <span class="step">1</span>
+      <div class="step-content">
+        <strong>Döngü kontrol değişkenini belirle:</strong> <code>b</code> her iterasyonda <code>b /= 2</code> ile yarılanıyor. Yani b → b/2 → b/4 → ... → 1 → 0 şeklinde iniyor.
+      </div>
+    </div>
+
+    <div class="step-row">
+      <span class="step">2</span>
+      <div class="step-content">
+        <strong>İterasyon sayısını hesapla:</strong> b'yi kaç kez 2'ye bölebiliriz? Cevap: <span class="math">⌊log₂(b)⌋ + 1</span> kez.
+      </div>
+    </div>
+
+    <div class="step-row">
+      <span class="step">3</span>
+      <div class="step-content">
+        <strong>Her iterasyondaki iş:</strong> <code>%</code>, <code>*=</code>, <code>/=</code>, karşılaştırma → hepsi <span class="tag tag-green">O(1)</span>.
+      </div>
+    </div>
+
+    <div class="step-row">
+      <span class="step">4</span>
+      <div class="step-content">
+        <strong>Toplam:</strong> <span class="math">T(b) = c · (⌊log₂(b)⌋ + 1)</span>
+      </div>
+    </div>
+
+    <div class="result big-o">→ T(n) = O(log n)</div>
+
+    <h3>Alternatif Yöntem: Tablo ile İzleme</h3>
+    <div class="alt-method">
+      <h4>Trace Table ile Doğrulama</h4>
+      <p>Somut bir örnekle döngüyü izleyelim: <span class="math">ornek(2, 10)</span> → 2<sup>10</sup> = 1024</p>
+      <table>
+        <tr><th>İterasyon</th><th>b</th><th>b%2</th><th>result</th><th>a</th></tr>
+        <tr><td>Başlangıç</td><td>10</td><td>—</td><td>1</td><td>2</td></tr>
+        <tr><td>1</td><td>5</td><td>0</td><td>1</td><td>4</td></tr>
+        <tr><td>2</td><td>2</td><td>1 → result*=4</td><td>4</td><td>16</td></tr>
+        <tr><td>3</td><td>1</td><td>0</td><td>4</td><td>256</td></tr>
+        <tr><td>4</td><td>0</td><td>1 → result*=256</td><td>1024</td><td>65536</td></tr>
+      </table>
+      <p>b=10 için <strong>4 iterasyon</strong> → ⌊log₂(10)⌋ + 1 = 3 + 1 = 4 ✓</p>
+    </div>
+
+    <div class="tip">
+      <strong>💡 Sınav İpucu:</strong> "b her iterasyonda yarılanıyor → iterasyon sayısı = log₂(b)" cümlesini yazmak genellikle tam puan alır. Tablo ile doğrulamak ekstra güven verir.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ SORU 2 ═══════════════════════════════════════════════ -->
+<div class="section q2" id="s2">
+  <div class="q-card">
+    <h2><span class="q-num">S2</span> Euclidean GCD — Best / Worst Case</h2>
+    <p>Fonksiyon: <span class="tag tag-green">Best O(1)</span> <span class="tag tag-red">Worst O(log n)</span> · Puan: 20P</p>
+
+    <h3>Kod</h3>
+    <pre><span class="type">int</span> <span class="fn">abc</span>(<span class="type">int</span> a, <span class="type">int</span> b) {
+    <span class="kw">while</span> (b != <span class="num">0</span>) {
+        <span class="type">int</span> temp = b;
+        b = a % b;              <span class="cmt">// kalan</span>
+        a = temp;
+    }
+    <span class="ret">return</span> a;                   <span class="cmt">// EBOB</span>
+}</pre>
+
+    <h3>Ne Yapıyor?</h3>
+    <p>Öklid algoritması ile <strong>EBOB (GCD)</strong> hesaplar. Her adımda <code>a % b</code> işlemi b'yi küçültür. Sonuçta b = 0 olunca a'daki değer EBOB'dur.</p>
+
+    <h3>Best Case Analizi</h3>
+
+    <div class="step-row">
+      <span class="step">1</span>
+      <div class="step-content">
+        <strong>Koşul:</strong> <code>b == 0</code> → döngüye hiç girilmez, ya da <code>a % b == 0</code> → tek iterasyonda biter.
+      </div>
+    </div>
+    <div class="step-row">
+      <span class="step">2</span>
+      <div class="step-content">
+        <strong>Örnek:</strong> <code>abc(10, 5)</code> → b = 10%5 = 0 → 1 iterasyon.
+      </div>
+    </div>
+
+    <div class="result best">→ Best Case: T(n) = O(1)</div>
+
+    <h3>Worst Case Analizi</h3>
+
+    <div class="step-row">
+      <span class="step">1</span>
+      <div class="step-content">
+        <strong>Koşul:</strong> a ve b <strong>ardışık Fibonacci sayıları</strong> olduğunda her adımda <code>a % b = a - b</code> olur (bölüm = 1). Bu, b'nin minimum hızda küçülmesini sağlar.
+      </div>
+    </div>
+    <div class="step-row">
+      <span class="step">2</span>
+      <div class="step-content">
+        <strong>Örnek:</strong> <code>abc(89, 55)</code> izleyelim:
+      </div>
+    </div>
+
+    <table>
+      <tr><th>Adım</th><th>a</th><th>b</th><th>a % b</th></tr>
+      <tr><td>1</td><td>89</td><td>55</td><td>34</td></tr>
+      <tr><td>2</td><td>55</td><td>34</td><td>21</td></tr>
+      <tr><td>3</td><td>34</td><td>21</td><td>13</td></tr>
+      <tr><td>4</td><td>21</td><td>13</td><td>8</td></tr>
+      <tr><td>5</td><td>13</td><td>8</td><td>5</td></tr>
+      <tr><td>6</td><td>8</td><td>5</td><td>3</td></tr>
+      <tr><td>7</td><td>5</td><td>3</td><td>2</td></tr>
+      <tr><td>8</td><td>3</td><td>2</td><td>1</td></tr>
+      <tr><td>9</td><td>2</td><td>1</td><td>0</td></tr>
+    </table>
+
+    <div class="step-row">
+      <span class="step">3</span>
+      <div class="step-content">
+        <strong>Lamé Teoremi:</strong> İterasyon sayısı ≤ 2.08 · log₂(min(a,b)). Fibonacci girdileri bu üst sınıra en yakın girdilerdir.
+      </div>
+    </div>
+
+    <div class="result worst">→ Worst Case: T(n) = O(log n)</div>
+
+    <h3>Alternatif Yöntem: Amortized Azalma İspatı</h3>
+    <div class="alt-method">
+      <h4>İki Adımda Yarılanma Argümanı</h4>
+      <p>Her <strong>iki ardışık</strong> iterasyonda b'nin değerinin en az yarıya indiğini gösterebiliriz:</p>
+      <div class="math-block">
+        a % b &lt; a ise ve sonraki adımda b % (a%b) &lt; b/2 <br>
+        → Her 2 adımda b en az yarılanır <br>
+        → Toplam adım ≤ 2 · log₂(b) <br>
+        → O(log n)
+      </div>
+      <p>Bu ispat Fibonacci bilgisi gerektirmez, sınavda daha kolay yazılır.</p>
+    </div>
+
+    <div class="tip">
+      <strong>💡 Sınav İpucu:</strong> Best case için "b sıfır veya tam bölen", worst case için "ardışık Fibonacci sayıları" anahtar kelimelerini mutlaka yazın. Lamé Teoremi'ne referans vermek ekstra puan getirir.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ SORU 3 ═══════════════════════════════════════════════ -->
+<div class="section q3" id="s3">
+  <div class="q-card">
+    <h2><span class="q-num">S3</span> Lineer Recursion — T(n) Analizi</h2>
+    <p>Fonksiyon: <span class="tag tag-purple">O(n)</span> · Yöntem: Substitution + Recursion Tree · Puan: 20P</p>
+
+    <h3>Kod</h3>
+    <pre><span class="type">int</span> <span class="fn">fonk</span>(<span class="type">int</span> n, <span class="type">int</span> k) {
+    <span class="kw">if</span> (n == <span class="num">1</span>)
+        <span class="ret">return</span> <span class="num">0</span>;
+    <span class="ret">return</span> (<span class="fn">fonk</span>(n - <span class="num">1</span>, k) + k) % n;
+}</pre>
+
+    <h3>Ne Yapıyor?</h3>
+    <p>Bu, <strong>Josephus problemi</strong> çözümüdür. n kişilik bir çemberde her k'ıncı kişiyi eleyerek hayatta kalanın indeksini bulur. Her çağrıda n bir azalır ve tek bir recursive çağrı yapılır.</p>
+
+    <h3>Yöntem 1: Substitution (Yerine Koyma)</h3>
+
+    <div class="step-row">
+      <span class="step">1</span>
+      <div class="step-content">
+        <strong>Rekürans bağıntısı:</strong>
+        <div class="math-block">T(n) = T(n-1) + c &nbsp;&nbsp;,&nbsp;&nbsp; T(1) = c₀</div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <span class="step">2</span>
+      <div class="step-content">
+        <strong>Açılım:</strong>
+        <div class="math-block">
+          T(n) = T(n-1) + c<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= T(n-2) + 2c<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= T(n-3) + 3c<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= ...<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= T(1) + (n-1)·c<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= c₀ + (n-1)·c
+        </div>
+      </div>
+    </div>
+
+    <div class="result big-o">→ T(n) = O(n)</div>
+
+    <h3>Yöntem 2: Recursion Tree</h3>
+    <div class="alt-method">
+      <h4>Ağaç Görselleştirmesi</h4>
+      <div class="tree">fonk(n)       → c     (toplama + mod)
+  │
+fonk(n-1)     → c
+  │
+fonk(n-2)     → c
+  │
+  ...          ...
+  │
+fonk(2)       → c
+  │
+fonk(1)       → c₀    (base case)</div>
+      <p style="margin-top:12px;">Dallanma faktörü = <strong>1</strong> (tek çocuk), derinlik = <strong>n-1</strong>. Düz zincir.</p>
+      <div class="math-block">
+        Toplam = Σ (i=0 → n-2) c + c₀ = (n-1)·c + c₀ = O(n)
+      </div>
+    </div>
+
+    <h3>Yöntem 3: Master Theorem Uygulanabilirliği</h3>
+    <div class="alt-method">
+      <h4>Neden Doğrudan Uygulanamaz?</h4>
+      <p>Master Theorem <span class="math">T(n) = aT(n/b) + f(n)</span> formunu gerektirir. Buradaki rekürans <span class="math">T(n) = T(n-1) + c</span> yani <strong>azaltma (subtract)</strong> formunda, <strong>bölme (divide)</strong> formunda değil. Bu yüzden Master Theorem doğrudan uygulanamaz.</p>
+      <p>Ancak genelleştirilmiş form olarak: <span class="math">T(n) = T(n-1) + O(1)</span> → her zaman <span class="math">O(n)</span> olduğu bilinen bir kalıptır.</p>
+    </div>
+
+    <div class="tip">
+      <strong>💡 Sınav İpucu:</strong> Bu tip sorularda substitution yöntemi en hızlı ve güvenli yoldur. 3 adımda açılım yapıp genel formülü bulmak yeterlidir. Recursion tree'yi çizim olarak eklemek görsellik açısından ek puan kazandırır.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ SORU 4 ═══════════════════════════════════════════════ -->
+<div class="section q4" id="s4">
+  <div class="q-card">
+    <h2><span class="q-num">S4</span> Tribonacci Recursion — T(n) Analizi</h2>
+    <p>Fonksiyon: <span class="tag tag-red">O(3ⁿ)</span> · Kesin: <span class="tag tag-yellow">Θ(1.839ⁿ)</span> · Puan: 25P</p>
+
+    <h3>Kod</h3>
+    <pre><span class="type">int</span> <span class="fn">fonksiyon</span>(<span class="type">int</span> n) {
+    <span class="kw">if</span> (n == <span class="num">0</span>) <span class="ret">return</span> <span class="num">0</span>;
+    <span class="kw">if</span> (n == <span class="num">1</span>) <span class="ret">return</span> <span class="num">1</span>;
+    <span class="kw">if</span> (n == <span class="num">2</span>) <span class="ret">return</span> <span class="num">2</span>;
+    <span class="ret">return</span> <span class="fn">fonksiyon</span>(n-<span class="num">1</span>) + <span class="fn">fonksiyon</span>(n-<span class="num">2</span>) + <span class="fn">fonksiyon</span>(n-<span class="num">3</span>);
+}</pre>
+
+    <h3>Ne Yapıyor?</h3>
+    <p>Tribonacci dizisi hesaplar — Fibonacci'nin 3 terimli versiyonu. Her eleman kendinden önceki üç elemanın toplamıdır. Memoization kullanılmadığı için aynı alt problemler defalarca çözülür.</p>
+
+    <h3>Yöntem 1: Recursion Tree</h3>
+
+    <div class="step-row">
+      <span class="step">1</span>
+      <div class="step-content">
+        <strong>Rekürans bağıntısı:</strong>
+        <div class="math-block">T(n) = T(n-1) + T(n-2) + T(n-3) + c &nbsp;&nbsp;,&nbsp;&nbsp; T(0)=T(1)=T(2)=c₀</div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <span class="step">2</span>
+      <div class="step-content">
+        <strong>Ağaç yapısı:</strong>
+        <div class="tree">                      fonk(n)                         maliyet: c
+                    /       |       \
+             fonk(n-1)  fonk(n-2)  fonk(n-3)        maliyet: 3c
+            /   |   \
+         ...   ...   ...                             maliyet: ≤ 9c
+         ...                                         maliyet: ≤ 27c
+          |
+     base cases                                      maliyet: c₀</div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <span class="step">3</span>
+      <div class="step-content">
+        <strong>Üst sınır:</strong> Her düğüm 3 çocuk doğuruyor. Derinlik en fazla n. Her seviyede en fazla 3<sup>i</sup> düğüm var.
+        <div class="math-block">
+          T(n) ≤ Σ (i=0 → n) 3ⁱ · c = c · (3ⁿ⁺¹ - 1) / 2
+        </div>
+      </div>
+    </div>
+
+    <div class="result big-o">→ Üst Sınır: T(n) = O(3ⁿ)</div>
+
+    <div class="step-row">
+      <span class="step">4</span>
+      <div class="step-content">
+        <strong>Alt sınır:</strong> En kısa dallar n/3 derinlikte base case'e ulaşır. Her çağrıda en az 3 alt çağrı yapıldığından:
+        <div class="math-block">T(n) ≥ 3 · T(n-3) → T(n) ≥ 3^(n/3) → T(n) = Ω(3^(n/3))</div>
+      </div>
+    </div>
+
+    <h3>Yöntem 2: Karakteristik Denklem</h3>
+    <div class="alt-method">
+      <h4>Kesin Asimptotik Çözüm</h4>
+      <div class="step-row">
+        <span class="step">1</span>
+        <div class="step-content">
+          Reküranstan karakteristik denklem: <span class="math">x³ = x² + x + 1</span>
+        </div>
+      </div>
+      <div class="step-row">
+        <span class="step">2</span>
+        <div class="step-content">
+          Düzenleme: <span class="math">x³ − x² − x − 1 = 0</span>
+        </div>
+      </div>
+      <div class="step-row">
+        <span class="step">3</span>
+        <div class="step-content">
+          En büyük pozitif reel kök: <span class="math">r ≈ 1.839</span> (Tribonacci sabiti)
+        </div>
+      </div>
+      <div class="step-row">
+        <span class="step">4</span>
+        <div class="step-content">
+          Genel çözüm baskın terimden gelir:
+          <div class="math-block">T(n) = Θ(1.839ⁿ)</div>
+        </div>
+      </div>
+      <p>Not: 1.839ⁿ, 3ⁿ'den çok daha yavaş büyür. Yani O(3ⁿ) doğru ama gevşek bir üst sınırdır.</p>
+    </div>
+
+    <h3>Yöntem 3: Substitution ile Üst Sınır İspatı</h3>
+    <div class="alt-method">
+      <h4>T(n) ≤ 3ⁿ olduğunu ispatlayalım (Tümevarım)</h4>
+      <p><strong>Tümevarım hipotezi:</strong> T(k) ≤ 3ᵏ, tüm k &lt; n için.</p>
+      <div class="math-block">
+        T(n) = T(n-1) + T(n-2) + T(n-3) + c<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;≤ 3ⁿ⁻¹ + 3ⁿ⁻² + 3ⁿ⁻³ + c<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 3ⁿ⁻³ · (3² + 3 + 1) + c<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 3ⁿ⁻³ · 13 + c<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;≤ 3ⁿ⁻³ · 27 = 3ⁿ &nbsp;&nbsp; ✓ &nbsp; (13 &lt; 27)
+      </div>
+      <p>Tümevarım tamamlandı → <span class="math">T(n) = O(3ⁿ)</span></p>
+    </div>
+
+    <div class="tip">
+      <strong>💡 Sınav İpucu:</strong> Recursion tree + üst sınır O(3ⁿ) yazmak 25P'nin büyük bölümünü alır. Karakteristik denklem ile Θ(1.839ⁿ) yazmak tam puan için yeterli. Substitution ile tümevarım ispatı en güçlü cevaptır.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ ÖZET ═══════════════════════════════════════════════ -->
+<div class="section" id="s5">
+  <div class="q-card" style="border-top: 3px solid var(--yellow);">
+    <h2 style="color: var(--yellow);">📊 Karşılaştırmalı Özet Tablo</h2>
+
+    <div class="summary-grid">
+      <div class="summary-item" style="border-left: 3px solid var(--accent1);">
+        <h4>Soru 1</h4>
+        <div class="big" style="color: var(--accent1);">O(log n)</div>
+        <div class="label">Binary Exponentiation · Döngü analizi</div>
+      </div>
+      <div class="summary-item" style="border-left: 3px solid var(--accent2);">
+        <h4>Soru 2</h4>
+        <div class="big" style="color: var(--accent2);">O(1) — O(log n)</div>
+        <div class="label">Euclidean GCD · Best/Worst case</div>
+      </div>
+      <div class="summary-item" style="border-left: 3px solid var(--accent3);">
+        <h4>Soru 3</h4>
+        <div class="big" style="color: var(--accent3);">O(n)</div>
+        <div class="label">Lineer Recursion · Substitution</div>
+      </div>
+      <div class="summary-item" style="border-left: 3px solid var(--accent4);">
+        <h4>Soru 4</h4>
+        <div class="big" style="color: var(--accent4);">O(3ⁿ)</div>
+        <div class="label">Tribonacci · Recursion tree</div>
+      </div>
+    </div>
+
+    <h3>Tam Karşılaştırma Tablosu</h3>
+    <table>
+      <tr>
+        <th>Soru</th>
+        <th>Algoritma</th>
+        <th>Rekürans</th>
+        <th>Karmaşıklık</th>
+        <th>En İyi Yöntem</th>
+        <th>Alternatif</th>
+      </tr>
+      <tr>
+        <td><span class="tag tag-blue">S1</span></td>
+        <td>Fast Exponentiation</td>
+        <td>Döngü: b /= 2</td>
+        <td style="color: var(--accent1); font-weight: 700;">O(log n)</td>
+        <td>Döngü analizi</td>
+        <td>Trace table</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-orange">S2</span></td>
+        <td>Euclidean GCD</td>
+        <td>Döngü: a % b</td>
+        <td style="font-weight: 700;"><span style="color:var(--green)">O(1)</span> / <span style="color:var(--red)">O(log n)</span></td>
+        <td>Lamé teoremi</td>
+        <td>2-adım yarılanma ispatı</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-purple">S3</span></td>
+        <td>Josephus (Lineer)</td>
+        <td>T(n) = T(n-1) + c</td>
+        <td style="color: var(--accent3); font-weight: 700;">O(n)</td>
+        <td>Substitution</td>
+        <td>Recursion tree</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-green">S4</span></td>
+        <td>Tribonacci</td>
+        <td>T(n) = T(n-1) + T(n-2) + T(n-3)</td>
+        <td style="color: var(--red); font-weight: 700;">O(3ⁿ) / Θ(1.839ⁿ)</td>
+        <td>Recursion tree</td>
+        <td>Karakteristik denklem, Tümevarım</td>
+      </tr>
+    </table>
+
+    <h3>Yöntem Seçim Rehberi</h3>
+    <table>
+      <tr><th>Rekürans Tipi</th><th>Önerilen Yöntem</th><th>Neden?</th></tr>
+      <tr>
+        <td>Döngü (iteratif)</td>
+        <td><span class="tag tag-blue">Döngü Analizi</span></td>
+        <td>Kontrol değişkeninin nasıl değiştiğine bak: yarılanma → log, birer azalma → n</td>
+      </tr>
+      <tr>
+        <td>T(n) = T(n-1) + f(n)</td>
+        <td><span class="tag tag-purple">Substitution</span></td>
+        <td>Açılım yap, seriyi topla. En hızlı ve güvenli yöntem</td>
+      </tr>
+      <tr>
+        <td>T(n) = aT(n/b) + f(n)</td>
+        <td><span class="tag tag-orange">Master Theorem</span></td>
+        <td>Bölme formundaki reküranslar için. 3 case'den birini uygula</td>
+      </tr>
+      <tr>
+        <td>Çoklu dallanma</td>
+        <td><span class="tag tag-green">Recursion Tree</span></td>
+        <td>Ağaçtaki toplam düğüm sayısını hesapla. Görsel ve sezgisel</td>
+      </tr>
+      <tr>
+        <td>Kesin çözüm gerekiyorsa</td>
+        <td><span class="tag tag-yellow">Karakteristik Denklem</span></td>
+        <td>xⁿ formunda çöz, baskın kökü bul → Θ notasyonu</td>
+      </tr>
+    </table>
+
+    <h3>Büyüme Hızı Karşılaştırması</h3>
+    <table>
+      <tr><th>n</th><th>O(1)</th><th>O(log n)</th><th>O(n)</th><th>O(1.839ⁿ)</th><th>O(3ⁿ)</th></tr>
+      <tr><td>1</td><td>1</td><td>0</td><td>1</td><td>2</td><td>3</td></tr>
+      <tr><td>5</td><td>1</td><td>2</td><td>5</td><td>21</td><td>243</td></tr>
+      <tr><td>10</td><td>1</td><td>3</td><td>10</td><td>357</td><td>59,049</td></tr>
+      <tr><td>20</td><td>1</td><td>4</td><td>20</td><td>127,482</td><td>3.5 × 10⁹</td></tr>
+      <tr><td>50</td><td>1</td><td>6</td><td>50</td><td>≈ 10¹³</td><td>≈ 10²³</td></tr>
+    </table>
+    <p style="color: var(--text-dim); font-size: 0.85rem; margin-top: 8px;">
+      Bu tablo sınavda "neden Tribonacci'nin memoization'a ihtiyacı var?" sorusuna somut kanıt olarak gösterilebilir.
+    </p>
+
+    <div class="tip" style="margin-top: 24px;">
+      <strong>💡 Genel Sınav Stratejisi:</strong><br>
+      1) Önce kodu oku ve ne yaptığını anla (1 dk)<br>
+      2) Rekürans bağıntısını yaz — doğru bağıntı puanın yarısıdır<br>
+      3) En rahat olduğun yöntemi uygula (substitution genelde en güvenli)<br>
+      4) Sonucu Big-O notasyonuyla yaz<br>
+      5) Varsa trace table/örnek ile doğrula (kısmi puan garantisi)
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function show(n) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('s' + n).classList.add('active');
+  document.querySelector('[data-q="' + n + '"]').classList.add('active');
+  window.scrollTo({ top: 240, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
